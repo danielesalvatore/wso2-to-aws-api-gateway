@@ -1,0 +1,117 @@
+service: fish-stat-rest-api
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: eu-west-1
+  profile: '${env:AWS_PROFILE}'
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - 'ssm:DescribeParameters'
+        - 'ssm:GetParameters'
+        - 'ssm:GetParameter'
+      Resource:
+        - 'arn:aws:ssm:eu-west-1:*:parameter/fish-stat-rest-api*'
+    - Effect: Allow
+      Action:
+        - 'kms:Decrypt'
+      Resource: '*'
+  vpc:
+    securityGroupIds:
+      - sg-0ac40b5dafdc04350
+    subnetIds:
+      - subnet-1bc5357d
+      - subnet-db37f093
+    logRetentionInDays: '14'
+    memorySize: '512'
+    usagePlan:
+      quota:
+        limit: '5000'
+        offset: '2'
+        period: MONTH
+      throttle:
+        burstLimit: '200'
+        rateLimit: '100'
+      tags:
+        ApplicationName: fish-stat-rest-api
+functions:
+  app:
+    handler: bin/lambda.handler
+    layers:
+      - Ref: OraclelibLambdaLayer
+    events:
+      - http:
+          method: GET
+          path: 'aquaculture/{country}/{group}/{start}'
+          cors: true
+      - http:
+          method: GET
+          path: 'capture/{country}/{group}/{start}'
+          cors: true
+      - http:
+          method: GET
+          path: 'aquaculture-env/{country}/{group}/{start}'
+          cors: true
+      - http:
+          method: GET
+          path: 'capture-area/{country}/{group}/{start}'
+          cors: true
+      - http:
+          method: GET
+          path: 'capture-ranking/{country}/{group}/{year}'
+          cors: true
+      - http:
+          method: GET
+          path: 'commodity/{country}/{group}/{start}'
+          cors: true
+      - http:
+          method: GET
+          path: 'aquaculture-ranking/{country}/{group}/{year}'
+          cors: true
+      - http:
+          method: GET
+          path: 'aquaculture-species/{country}/{group}/{start}'
+          cors: true
+      - http:
+          method: GET
+          path: 'capture-species/{country}/{group}/{start}'
+          cors: true
+      - http:
+          method: GET
+          path: 'food-supply/{country}/{start}'
+          cors: true
+      - http:
+          method: GET
+          path: 'food-supply/{country}'
+          cors: true
+      - http:
+          method: GET
+          path: 'food-supply-world/{start_1_year}/{start_2_year}'
+          cors: true
+      - http:
+          method: GET
+          path: 'aquaculture-species-asfis/{asfis_code}'
+          cors: true
+      - http:
+          method: GET
+          path: 'capture-species-asfis/{asfis_code}'
+          cors: true
+    environment:
+      DATABASE_PASSWORD: '${ssm:/fish-stat-rest-api/DATABASE_PASSWORD}'
+layers:
+  oraclelib:
+    path: oraclelib
+plugins:
+  - serverless-offline-dotenv
+  - serverless-dotenv-plugin
+  - serverless-webpack
+  - serverless-offline
+custom:
+  webpack:
+    webpackConfig: webpack.config.js
+    includeModules:
+      forceExclude:
+        - oracledb
+        - aws-sdk
+  serverless-offline:
+    host: 0.0.0.0

@@ -1,0 +1,45 @@
+{
+  "name": "fish-stat-rest-api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "AWS_SDK_LOAD_CONFIG=true sls offline start",
+    "package": "AWS_SDK_LOAD_CONFIG=true serverless package",
+    "deploy": "AWS_SDK_LOAD_CONFIG=true serverless deploy",
+    "remove": "AWS_SDK_LOAD_CONFIG=true serverless remove",
+    "generate:input": "node ./scripts/generate-input.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/cioapps/fish-stat-rest-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/cioapps/fish-stat-rest-api#readme",
+  "dependencies": {
+    "aws-sdk": "^2.508.0",
+    "aws-serverless-express": "^3.3.6",
+    "express": "^4.17.1",
+    "helmet": "^3.21.1",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "js-yaml": "^3.13.1",
+    "oracledb": "^3.1.2",
+    "serverless-dotenv-plugin": "^2.1.1",
+    "serverless-offline": "^5.10.1",
+    "serverless-offline-dotenv": "0.0.14",
+    "serverless-webpack": "^5.3.1",
+    "webpack": "^4.39.1",
+    "webpack-node-externals": "^1.7.2",
+    "xml2js": "^0.4.19"
+  }
+}

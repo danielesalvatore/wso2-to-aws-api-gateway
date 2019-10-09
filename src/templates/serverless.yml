@@ -1,0 +1,68 @@
+# This file is generated. Do not edit it directly. Edit ./src/templates/serverless.yml inste
+
+service: fish-stat-rest-api
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: eu-west-1
+  profile: ${env:AWS_PROFILE}
+  iamRoleStatements:
+  - Effect: "Allow"
+    Action:
+      - "ssm:DescribeParameters"
+      - 'ssm:GetParameters'
+      - 'ssm:GetParameter'
+    Resource:
+      - arn:aws:ssm:eu-west-1:*:parameter/fish-stat-rest-api*
+  - Effect: "Allow"
+    Action:
+      - "kms:Decrypt"
+    Resource: '*'
+  vpc:
+    securityGroupIds:
+      - sg-0ac40b5dafdc04350
+    subnetIds:
+      - subnet-1bc5357d
+      - subnet-db37f093
+    logRetentionInDays: 14  
+    memorySize: 512
+    usagePlan: # Optional usage plan configuration
+      quota:  
+        limit: 5000
+        offset: 2
+        period: MONTH
+      throttle:
+        burstLimit: 200
+        rateLimit: 100
+      tags: # Optional service wide function tags
+        ApplicationName: fish-stat-rest-api
+        
+functions:
+  app:
+    handler: bin/lambda.handler
+    layers:
+      - { Ref: OraclelibLambdaLayer }
+    events:
+    environment:
+      DATABASE_PASSWORD: ${ssm:/fish-stat-rest-api/DATABASE_PASSWORD}
+      
+layers:
+  oraclelib:
+    path: oraclelib # required, path to layer contents on disk
+
+plugins:
+  - serverless-offline-dotenv
+  - serverless-dotenv-plugin
+  - serverless-webpack
+  - serverless-offline 
+        
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules:  # enable auto-packing of external modules
+      forceExclude:
+      - oracledb
+      - aws-sdk
+  serverless-offline:
+      host: 0.0.0.0
