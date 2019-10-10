@@ -8,28 +8,48 @@ const yaml = require('js-yaml')
 require('dotenv').config()
 
 const validateContentSchema = content => {
+  const {INPUT_FILE_FORMAT} = process.env
+
   if (!content.hasOwnProperty('data')) {
     throw new Error(`XML must contain a "data" attribute as root attribute: {data: "..."}`)
   }
 
-  const {data} = content
-
-  if (!data.hasOwnProperty('resource') || !data.hasOwnProperty('query')) {
+  if (INPUT_FILE_FORMAT !== 'SOAP' && INPUT_FILE_FORMAT !== 'REST') {
     throw new Error(
-      `XML must contain "data.query" and "data.resource" attributes exist: {data: {query: [...], resource: [...] }}}`,
+      `'INPUT_FILE_FORMAT' should be one of the following values: ['REST', 'SOAP']. Found: ${INPUT_FILE_FORMAT}`,
     )
   }
 
-  const {resource, query} = content.data
+  const {data} = content
 
-  if (!Array.isArray(resource) || !Array.isArray(query)) {
-    throw new Error(`"data.query" and "data.resource" attributes must be Arrays`)
+  if (INPUT_FILE_FORMAT === 'REST') {
+    if (!data.hasOwnProperty('resource') || !data.hasOwnProperty('query')) {
+      throw new Error(
+        `XML must contain "data.query" and "data.resource" attributes exist: {data: {query: [...], resource: [...] }}}`,
+      )
+    }
+
+    const {resource, query} = content.data
+
+    if (!Array.isArray(resource) || !Array.isArray(query)) {
+      throw new Error(`"data.query" and "data.resource" attributes must be Arrays`)
+    }
+  }
+
+  if (INPUT_FILE_FORMAT === 'SOAP') {
+    if (!data.hasOwnProperty('operation') || !data.hasOwnProperty('query')) {
+      throw new Error(
+        `XML must contain "data.query" and "data.operation" attributes exist: {data: {query: [...], resource: [...] }}}`,
+      )
+    }
   }
 }
 
 const sanitizeStringFromCarriageReturns = str => str.replace(/[\n\r]/g, '')
 
-const normalizeQuery = q => {
+// REST
+
+const normalizeRESTQuery = q => {
   const result = {}
 
   // ID
@@ -86,7 +106,7 @@ const normalizeQuery = q => {
   return result
 }
 
-const normalizeResource = r => {
+const normalizeRESTResource = r => {
   const result = {}
 
   // Method and Path
@@ -151,17 +171,89 @@ const combineQueriesAndResource = ({queries, resources}) => {
   return results
 }
 
+// SOAP
+const normalizeSOAPQuery = q => {
+  const result = {}
+
+  // ID
+  result.id = q.$.id
+
+  // SQL query
+  result.sql = q.sql[0]
+  //result.sql = sanitizeStringFromCarriageReturns(result.sql)
+
+  // final obj contains "name", "ordinal", "sqlType" attrs
+  result.params = q.param.map(p => {
+    return {
+      ...p.$,
+    }
+  })
+
+  try {
+    result.outputFormat = {}
+    result.outputFormat.result = {}
+    const dirty = q.result[0].element.map(e => ({[e.$.column]: e.$.name}))
+    cleanEntry = dirty.reduce((acc, current) => {
+      const keys = Object.keys(current)
+      return {...acc, [keys[0]]: current[keys[0]]}
+    }, {})
+    result.outputFormat.result.entry = [cleanEntry]
+  } catch (err) {
+    console.error(err)
+    throw new Error(`Impossible to parse the Output Format for query id: ${result.id}`)
+  }
+
+  return result
+}
+
+const normalizeSOAPOperation = r => {
+  const result = {}
+
+  // Method and Path
+  const {name} = r.$
+  result.method = 'GET' // force to be alway GET
+
+  const q = r['call-query'][0] // Always array of 1 item
+
+  // Query correspondence
+  result.href = q.$.href
+
+  // Params correspondence
+  result.params = q['with-param'].map(p => ({...p.$}))
+
+  // Path
+  result.path = `${name}`
+  result.params.forEach(p => {
+    result.path = `${result.path}/{${p['query-param']}}`
+  })
+
+  return result
+}
+
 const createJsonConfig = content => {
-  const {JSON_OUTPUT_PATH} = process.env
+  const {JSON_OUTPUT_PATH, INPUT_FILE_FORMAT} = process.env
 
   validateContentSchema(content)
 
-  const {query, resource} = content.data
+  let config
 
-  const queries = query.map(normalizeQuery)
-  const resources = resource.map(normalizeResource)
+  if (INPUT_FILE_FORMAT === 'REST') {
+    const {query, resource} = content.data
 
-  const config = combineQueriesAndResource({queries, resources})
+    const queries = query.map(normalizeRESTQuery)
+    const resources = resource.map(normalizeRESTResource)
+
+    config = combineQueriesAndResource({queries, resources})
+  }
+
+  if (INPUT_FILE_FORMAT === 'SOAP') {
+    const {query, operation} = content.data
+
+    const queries = query.map(normalizeSOAPQuery)
+    const operations = operation.map(normalizeSOAPOperation)
+
+    config = combineQueriesAndResource({queries, resources: operations})
+  }
 
   // Write json configuration file
   fs.writeFileSync(JSON_OUTPUT_PATH, JSON.stringify(config))
@@ -246,7 +338,7 @@ const init = () => {
   const content = fs.readFileSync(INPUT_PATH)
 
   // Parse XML WSO2 export
-  parser.parseString(content, function(err, result) {
+  parser.parseString(content, (err, result) => {
     if (err) {
       console.error(err)
       throw new Error('Impossible to parse the XML')

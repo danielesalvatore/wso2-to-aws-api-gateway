@@ -3,8 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "prestart": "npm run generate:input",
     "start": "AWS_SDK_LOAD_CONFIG=true sls offline start",
+    "prepackage": "npm run generate:input",
     "package": "AWS_SDK_LOAD_CONFIG=true serverless package",
+    "predeploy": "npm run generate:input",
     "deploy": "AWS_SDK_LOAD_CONFIG=true serverless deploy",
     "remove": "AWS_SDK_LOAD_CONFIG=true serverless remove",
     "generate:input": "node ./scripts/generate-input.js",

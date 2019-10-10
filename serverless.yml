@@ -42,59 +42,11 @@ functions:
     events:
       - http:
           method: GET
-          path: 'aquaculture/{country}/{group}/{start}'
+          path: 'travelDetails/{DOCUMENT_NUM}'
           cors: true
       - http:
           method: GET
-          path: 'capture/{country}/{group}/{start}'
-          cors: true
-      - http:
-          method: GET
-          path: 'aquaculture-env/{country}/{group}/{start}'
-          cors: true
-      - http:
-          method: GET
-          path: 'capture-area/{country}/{group}/{start}'
-          cors: true
-      - http:
-          method: GET
-          path: 'capture-ranking/{country}/{group}/{year}'
-          cors: true
-      - http:
-          method: GET
-          path: 'commodity/{country}/{group}/{start}'
-          cors: true
-      - http:
-          method: GET
-          path: 'aquaculture-ranking/{country}/{group}/{year}'
-          cors: true
-      - http:
-          method: GET
-          path: 'aquaculture-species/{country}/{group}/{start}'
-          cors: true
-      - http:
-          method: GET
-          path: 'capture-species/{country}/{group}/{start}'
-          cors: true
-      - http:
-          method: GET
-          path: 'food-supply/{country}/{start}'
-          cors: true
-      - http:
-          method: GET
-          path: 'food-supply/{country}'
-          cors: true
-      - http:
-          method: GET
-          path: 'food-supply-world/{start_1_year}/{start_2_year}'
-          cors: true
-      - http:
-          method: GET
-          path: 'aquaculture-species-asfis/{asfis_code}'
-          cors: true
-      - http:
-          method: GET
-          path: 'capture-species-asfis/{asfis_code}'
+          path: 'listTravels/{INDEX_NUMBER}/{START_DATE}/{END_DATE}'
           cors: true
     environment:
       DATABASE_PASSWORD: '${ssm:/fish-stat-rest-api/DATABASE_PASSWORD}'
