@@ -79,6 +79,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -157,6 +158,7 @@ public/
 # Serverless directories
 .serverless/
 
+
 # FuseBox cache
 .fusebox/
 
@@ -196,7 +198,6 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
 [Oo]bj/
 [Ll]og/
 
