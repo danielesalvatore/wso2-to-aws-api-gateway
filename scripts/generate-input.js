@@ -265,7 +265,7 @@ const createYml = ({config}) => {
   const {SERVERLESS_CONFIG_TEMPLATE, SERVERLESS_CONFIG_FILE, ADD_CORS} = process.env
 
   const paths = config.map(c => ({
-    http: {method: c.method, path: c.path, cors: ADD_CORS === 'true'},
+    http: {method: c.method, path: c.path, cors: ADD_CORS === 'true', private: true},
   }))
 
   // Load serverless.yml template configuration

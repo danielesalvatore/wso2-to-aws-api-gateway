@@ -32,8 +32,6 @@ provider:
       throttle:
         burstLimit: '200'
         rateLimit: '100'
-      tags:
-        ApplicationName: fish-stat-rest-api
 functions:
   app:
     handler: bin/lambda.handler
@@ -42,12 +40,74 @@ functions:
     events:
       - http:
           method: GET
-          path: 'travelDetails/{DOCUMENT_NUM}'
+          path: 'aquaculture/{country}/{group}/{start}'
           cors: true
+          private: true
       - http:
           method: GET
-          path: 'listTravels/{INDEX_NUMBER}/{START_DATE}/{END_DATE}'
+          path: 'capture/{country}/{group}/{start}'
           cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'aquaculture-env/{country}/{group}/{start}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'capture-area/{country}/{group}/{start}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'capture-ranking/{country}/{group}/{year}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'commodity/{country}/{group}/{start}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'aquaculture-ranking/{country}/{group}/{year}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'aquaculture-species/{country}/{group}/{start}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'capture-species/{country}/{group}/{start}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'food-supply/{country}/{start}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'food-supply/{country}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'food-supply-world/{start_1_year}/{start_2_year}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'aquaculture-species-asfis/{asfis_code}'
+          cors: true
+          private: true
+      - http:
+          method: GET
+          path: 'capture-species-asfis/{asfis_code}'
+          cors: true
+          private: true
     environment:
       DATABASE_PASSWORD: '${ssm:/fish-stat-rest-api/DATABASE_PASSWORD}'
 layers:
