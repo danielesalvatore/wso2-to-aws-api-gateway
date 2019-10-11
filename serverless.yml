@@ -34,7 +34,7 @@ provider:
         rateLimit: '100'
 functions:
   app:
-    handler: bin/lambda.handler
+    handler: src/lambda.handler
     layers:
       - Ref: OraclelibLambdaLayer
     events:
