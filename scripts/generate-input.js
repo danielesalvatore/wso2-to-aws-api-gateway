@@ -262,9 +262,11 @@ const createJsonConfig = content => {
 }
 
 const createYml = ({config}) => {
-  const {SERVERLESS_CONFIG_TEMPLATE, SERVERLESS_CONFIG_FILE} = process.env
+  const {SERVERLESS_CONFIG_TEMPLATE, SERVERLESS_CONFIG_FILE, ADD_CORS} = process.env
 
-  const paths = config.map(c => ({http: {method: c.method, path: c.path, cors: true}}))
+  const paths = config.map(c => ({
+    http: {method: c.method, path: c.path, cors: ADD_CORS === 'true'},
+  }))
 
   // Load serverless.yml template configuration
   let template = yaml.safeLoad(fs.readFileSync(path.resolve(SERVERLESS_CONFIG_TEMPLATE), 'utf8'))
@@ -285,7 +287,7 @@ const createYml = ({config}) => {
     AWS_LAMBDA_USAGE_PLAN_THROTTLE_RATE_LIMIT = 100,
   } = process.env
 
-  const vpc = template.provider.vpc
+  const vpc = template.provider.vpc || {}
   vpc.securityGroupIds = AWS_LAMBDA_SECURITY_GROUP_IDS.split(',')
   vpc.subnetIds = AWS_SUBNET_IDS.split(',')
   vpc.logRetentionInDays = AWS_LAMBDA_LOG_RETANTION_IN_DAYS
@@ -321,6 +323,8 @@ const createYml = ({config}) => {
     vpc.usagePlan.throttle.burstLimit = AWS_LAMBDA_USAGE_PLAN_THROTTLE_BURST_LIMIT
     vpc.usagePlan.throttle.rateLimit = AWS_LAMBDA_USAGE_PLAN_THROTTLE_RATE_LIMIT
   }
+
+  template.provider.vpc = vpc
 
   // Write configuration file
   fs.writeFileSync(SERVERLESS_CONFIG_FILE, yaml.safeDump(template))
