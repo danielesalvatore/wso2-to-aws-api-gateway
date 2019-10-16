@@ -1,4 +1,5 @@
 const express = require('express')
+const cloneDeep = require('lodash/cloneDeep')
 const router = express.Router()
 const config = require('../input/index.json')
 const {query} = require('../oracleDriver')
@@ -18,7 +19,7 @@ const normalizePath = path => {
   let normalized = path.replace(/}/g, '')
   normalized = normalized.replace(/{/g, ':')
 
-  // Include initial '/' if needed
+  // Include initial '/' if neededcapture-species
   const firstChar = normalized.charAt(0)
   return firstChar === '/' ? normalized : `/${normalized}`
 }
@@ -57,7 +58,6 @@ const formatResult = ({outputFormat, rawData}) => {
     const initialValue = entryShape[k]
     invertedEntryShape[initialValue] = k
   })
-
   // Exact dimentions indexes
   const dimention2index = rawData.metaData.reduce((result, currentValue, currentIndex) => {
     result[currentIndex] = invertedEntryShape[currentValue.name]
@@ -65,15 +65,19 @@ const formatResult = ({outputFormat, rawData}) => {
   }, [])
 
   // Format output
-  outputFormat.result.entry = rawData.rows.map(r => {
+  outputFormat.result.entry = rawData
+  .rows
+  .slice(0)
+  .map(r => {
     const m = {}
     dimention2index.forEach((d, index) => {
       m[d] = String(r[index])
     })
     return m
   })
+  .slice(0)
 
-  return outputFormat
+  return cloneDeep(outputFormat)
 }
 
 const normalizeParams = ({params, configParams}) => {
@@ -131,7 +135,8 @@ const normalizeSql = ({sql}) => {
 }
 
 // Dynamically generate express.js routes from input file
-config.forEach(c => {
+config.forEach(rawConfig => {
+  const c = cloneDeep(rawConfig)
   validateConfig(c)
 
   const {method, path, params: configParams} = c
@@ -145,16 +150,18 @@ config.forEach(c => {
 
     // Query db
     try {
-      const rawData = await query({
+      const rawDataFromDb = await query({
         sql: normalizeSql({sql: c.sql}),
         params: p,
       })
 
-      const formattedResult = formatResult({outputFormat: c.outputFormat, rawData})
+      const outputFormat = cloneDeep(c.outputFormat)
+      const rawData =  cloneDeep(rawDataFromDb)
+      const formattedResult = formatResult({outputFormat, rawData})
 
-      res.json(formattedResult)
+       res.json(cloneDeep(formattedResult))
     } catch (err) {
-      console.log(err.message)
+      console.error(err.message)
       res.status(500).send(`500 internal error`)
     }
   })

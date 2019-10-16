@@ -18,10 +18,10 @@ provider:
       Resource: '*'
   vpc:
     securityGroupIds:
-      - sg-0ac40b5dafdc04350
+      - sg-0fe1b96df9f76d525
     subnetIds:
-      - subnet-1bc5357d
-      - subnet-db37f093
+      - subnet-3d2aed75
+      - subnet-4231c124
     logRetentionInDays: '14'
     memorySize: '512'
     usagePlan:

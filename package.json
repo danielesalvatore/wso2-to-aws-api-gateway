@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prestart": "npm run generate:input",
-    "start": "cross-env AWS_SDK_LOAD_CONFIG=true sls offline start",
+    "start": "cross-env AWS_SDK_LOAD_CONFIG=true sls offline start --apiKey my-token",
     "prepackage": "npm run generate:input",
     "package": "cross-env AWS_SDK_LOAD_CONFIG=true serverless package",
     "predeploy": "npm run generate:input",
@@ -27,6 +27,7 @@
     "cross-env": "^6.0.3",
     "express": "^4.17.1",
     "helmet": "^3.21.1",
+    "lodash": "^4.17.15",
     "morgan": "^1.9.1"
   },
   "devDependencies": {
