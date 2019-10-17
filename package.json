@@ -24,6 +24,7 @@
   "dependencies": {
     "aws-sdk": "^2.508.0",
     "aws-serverless-express": "^3.3.6",
+    "cors": "^2.8.5",
     "cross-env": "^6.0.3",
     "express": "^4.17.1",
     "helmet": "^3.21.1",

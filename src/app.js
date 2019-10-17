@@ -1,6 +1,7 @@
 const express = require('express')
 const logger = require('morgan')
 const helmet = require('helmet')
+const cors = require('cors')
 const routes = require('./routes/')
 
 // Env file configuration
@@ -8,6 +9,7 @@ require('dotenv').config()
 
 const app = express()
 
+app.use(cors())
 app.use(helmet())
 app.use(logger('dev'))
 app.use(express.json())
