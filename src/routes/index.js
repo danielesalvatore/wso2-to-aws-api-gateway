@@ -7,7 +7,7 @@ const {query} = require('../oracleDriver')
 const validateConfig = c => {
   const mandatoryAttrs = ['method', 'path', 'sql', 'outputFormat']
 
-  mandatoryAttrs.forEach((a, index) => {
+  mandatoryAttrs.forEach((a, nomindex) => {
     if (!c.hasOwnProperty(a)) {
       console.error(a)
       throw new Error(`Invalid configuration on item #${index}: ${a}`)
@@ -65,17 +65,16 @@ const formatResult = ({outputFormat, rawData}) => {
   }, [])
 
   // Format output
-  outputFormat.result.entry = rawData
-  .rows
-  .slice(0)
-  .map(r => {
-    const m = {}
-    dimention2index.forEach((d, index) => {
-      m[d] = String(r[index])
+  outputFormat.result.entry = rawData.rows
+    .slice(0)
+    .map(r => {
+      const m = {}
+      dimention2index.forEach((d, index) => {
+        m[d] = String(r[index])
+      })
+      return m
     })
-    return m
-  })
-  .slice(0)
+    .slice(0)
 
   return cloneDeep(outputFormat)
 }
@@ -156,10 +155,10 @@ config.forEach(rawConfig => {
       })
 
       const outputFormat = cloneDeep(c.outputFormat)
-      const rawData =  cloneDeep(rawDataFromDb)
+      const rawData = cloneDeep(rawDataFromDb)
       const formattedResult = formatResult({outputFormat, rawData})
 
-       res.json(cloneDeep(formattedResult))
+      res.json(cloneDeep(formattedResult))
     } catch (err) {
       console.error(err.message)
       res.status(500).send(`500 internal error`)

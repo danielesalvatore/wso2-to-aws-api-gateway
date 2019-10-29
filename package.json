@@ -11,7 +11,8 @@
     "deploy": "cross-env AWS_SDK_LOAD_CONFIG=true serverless deploy",
     "remove": "cross-env AWS_SDK_LOAD_CONFIG=true serverless remove",
     "generate:input": "node ./scripts/generate-input.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:standalone": "node ./src/www"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
     "aws-serverless-express": "^3.3.6",
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "helmet": "^3.21.1",
     "lodash": "^4.17.15",
