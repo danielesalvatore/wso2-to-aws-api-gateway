@@ -19,7 +19,7 @@
     "url": "git+ssh://git@bitbucket.org/cioapps/fish-stat-rest-api.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "daniele.salvatore[at]fao.org",
   "license": "ISC",
   "homepage": "https://bitbucket.org/cioapps/fish-stat-rest-api#readme",
   "dependencies": {
