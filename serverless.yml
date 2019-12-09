@@ -4,6 +4,7 @@ provider:
   runtime: nodejs10.x
   region: eu-west-1
   profile: '${env:AWS_PROFILE}'
+  stage: '${env:AWS_STAGE}'
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -18,10 +19,10 @@ provider:
       Resource: '*'
   vpc:
     securityGroupIds:
-      - sg-0fe1b96df9f76d525
+      - sg-0d85f85ef8536965d
     subnetIds:
-      - subnet-3d2aed75
-      - subnet-4231c124
+      - subnet-9ed9e4c5
+      - subnet-7fc33319
     logRetentionInDays: '14'
     memorySize: '512'
     usagePlan:
