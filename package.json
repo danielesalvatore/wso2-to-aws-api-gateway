@@ -23,7 +23,7 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/cioapps/fish-stat-rest-api#readme",
   "dependencies": {
-    "aws-sdk": "^2.508.0",
+    "aws-sdk": "^2.814.0",
     "aws-serverless-express": "^3.3.6",
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
