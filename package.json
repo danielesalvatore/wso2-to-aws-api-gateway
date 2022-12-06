@@ -43,7 +43,7 @@
     "js-yaml": "^3.13.1",
     "oracledb": "^3.1.2",
     "serverless-dotenv-plugin": "^2.1.1",
-    "serverless-offline": "^5.10.1",
+    "serverless-offline": "^12.0.0",
     "serverless-offline-dotenv": "0.0.14",
     "serverless-webpack": "^5.3.1",
     "webpack": "^4.39.1",
